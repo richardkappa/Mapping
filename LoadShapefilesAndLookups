@@ -27,17 +27,27 @@ save(Post.Area.SP,Post.Dist.SP,Post.Sect.SP, file = "C:/Users/Richardkappa/Docum
 # ONS shapefiles, from data.gov and geoportal.statistics.gov.uk
 LSOA.SP <- readOGR("C:/Users/Richardkappa/Documents/Shapefiles/LSOA Boundaries","LSOA_2011_EW_BGC_V2")
 GovtOff.SP <- readOGR("C:/Users/Richardkappa/Documents/Shapefiles/Govt Office Regions","GOR_DEC_2010_EN_BFE")
+Country.SP <- readOGR("C:/Users/Richardkappa/Documents/Shapefiles/UK Countries","CTRY_DEC_2011_GB_BGC")
 
 
 LSOA.SP <- spTransform(LSOA.SP,CRS(OSGB))
 GovtOff.SP <- spTransform(GovtOff.SP,CRS(OSGB))
+Country.SP <- spTransform(Country.SP,CRS(OSGB))
 
-save(LSOA.SP,GovtOff.SP, file = "C:/Users/Richardkappa/Documents/Shapefiles/R Shapefiles/ONSShapes.RData")
+# Disolve the Countries to get just the boundary of Great Britain
 
-# Now geth the lookups by LSOA
+Country.SP@data$GB <- "GB"
+row.names(Country.SP) <- row.names(Country.SP@data)
+Country.SP <- spChFIDs(Country.SP,row.names(Country.SP))
+
+GB.SP <- gUnaryUnion(Country.SP,id=Country.SP@data$GB)
+
+save(LSOA.SP,GovtOff.SP,GB.SP, file = "C:/Users/Richardkappa/Documents/Shapefiles/R Shapefiles/ONSShapes.RData")
+
+# Now get the lookups by LSOA
 
 #  1 LAD - Loacal Authority District
-#Import and clean the lookup, align the names with the Crime Data names
+# Import and clean the lookup, align the names with the standard naming conventions of the ONS
 LSOA.LAD <- read.csv("C:/Users/Richardkappa/Documents/ONSLookups/LSOA01_LSOA11_LAD11_EW_LU.csv")
 keep <- c("LSOA11CD", "LAD11CD", "LAD11NM")
 names <- c("LSOA11CD", "LAD11CD", "LAD11NM")
