@@ -73,12 +73,48 @@ LSOA.Population <- LSOA.Population[keep]
 names(LSOA.Population) <- names
 LSOA.Population <- LSOA.Population[!duplicated(LSOA.Population),]
 
-#Merge the LAD data onto the LSOA data and disolve the inner boundaries
+# Merge the LAD data onto the LSOA data and disolve the inner boundaries
+# Still isn't working properly
 
 LAD.SP <- merge(LSOA.SP,LSOA.LAD,by="LSOA11CD",all.x=TRUE)
 row.names(LAD.SP) <- row.names(LAD.SP@data)
 LAD.SP <- spChFIDs(LAD.SP,row.names(LAD.SP))
-LAD.SP <- gUnaryUnion(LAD.SP,id=LAD.SP@data$LAD11CD)
+LAD.SP <- gUnaryUnion(LAD.SP,id=LAD.SP$LAD11NM)
+
+# Try disolving to the outline of the UK
+Post.Area.SP@data$UK <- "UK"
+row.names(Post.Area.SP) <- row.names(Post.Area.SP@data)
+Post.Area.SP <- spChFIDs(Post.Area.SP,row.names(Post.Area.SP))
+
+UK.SP <- gUnaryUnion(Post.Area.SP,id=Post.Area.SP@data$UK)
 
 save(LSOA.SP,GovtOff.SP,GB.SP,LAD.SP, file = "C:/Users/Richardkappa/Documents/Shapefiles/R Shapefiles/ONSShapes.RData")
 save(LSOA.City,LSOA.LAD,LSOA.Population,LSOA.LAD,file="C:/Users/Richardkappa/Documents/Shapefiles/R Shapefiles/ONSLookups.RData")
+
+jpeg("LAD.jpeg",2500,2000,res=100)
+plot(LAD.SP)
+dev.off()
+
+jpeg("PostArea.jpeg",2500,2000,res=100)
+plot(Post.Area.SP)
+dev.off()
+
+jpeg("PostDist.jpeg",2500,2000,res=100)
+plot(Post.Dist.SP)
+dev.off()
+
+jpeg("PostSec.jpeg",2500,2000,res=100)
+plot(Post.Sect.SP)
+dev.off()
+
+jpeg("Govt.jpeg",2500,2000,res=100)
+plot(GovtOff.SP)
+dev.off()
+
+jpeg("LSOA.jpeg",2500,2000,res=100)
+plot(LSOA.SP)
+dev.off()
+
+jpeg("UK.jpeg",2500,2000,res=100)
+plot(UK.SP)
+dev.off()
