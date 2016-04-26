@@ -37,12 +37,14 @@ LSOA.SP <- spTransform(LSOA.SP,CRS(OSGB))
 GovtOff.SP <- spTransform(GovtOff.SP,CRS(OSGB))
 Country.SP <- spTransform(Country.SP,CRS(OSGB))
 
-# Disolve the Countries to get just the boundary of Great Britain
-Country.SP@data$GB <- "GB"
-row.names(Country.SP) <- row.names(Country.SP@data)
-Country.SP <- spChFIDs(Country.SP,row.names(Country.SP))
+# Now import the county, country and outline of the UK
+UK.SP <- readOGR("C:/Users/Richardkappa/Documents/Shapefiles/UK Countries and Counties","GBR_adm0")
+UK.Country.SP <- readOGR("C:/Users/Richardkappa/Documents/Shapefiles/UK Countries and Counties","GBR_adm1")
+UK.County.SP <- readOGR("C:/Users/Richardkappa/Documents/Shapefiles/UK Countries and Counties","GBR_adm2")
 
-GB.SP <- gUnaryUnion(Country.SP,id=Country.SP@data$GB)
+UK.SP <- spTransform(UK.SP,CRS(OSGB))
+UK.Country.SP <- spTransform(UK.Country.SP,CRS(OSGB))
+UK.County.SP <- spTransform(UK.County.SP,CRS(OSGB))
 
 # Now get the lookups by LSOA
 
@@ -86,10 +88,13 @@ Post.Area.SP@data$UK <- "UK"
 row.names(Post.Area.SP) <- row.names(Post.Area.SP@data)
 Post.Area.SP <- spChFIDs(Post.Area.SP,row.names(Post.Area.SP))
 
-UK.SP <- gUnaryUnion(Post.Area.SP,id=Post.Area.SP@data$UK)
+# This doesn't quite work so don't save the output
+Disolved.UK.SP <- gUnaryUnion(Post.Area.SP,id=Post.Area.SP@data$UK)
 
-save(LSOA.SP,GovtOff.SP,GB.SP,LAD.SP, file = "C:/Users/Richardkappa/Documents/Shapefiles/R Shapefiles/ONSShapes.RData")
+save(LSOA.SP,GovtOff.SP,LAD.SP, file = "C:/Users/Richardkappa/Documents/Shapefiles/R Shapefiles/ONSShapes.RData")
 save(LSOA.City,LSOA.LAD,LSOA.Population,LSOA.LAD,file="C:/Users/Richardkappa/Documents/Shapefiles/R Shapefiles/ONSLookups.RData")
+save(UK.SP,UK.County.SP,UK.Country.SP,file="C:/Users/Richardkappa/Documents/Shapefiles/R Shapefiles/UKCounty SHapefiles.RData")
+
 
 jpeg("LAD.jpeg",2500,2000,res=100)
 plot(LAD.SP)
@@ -117,4 +122,12 @@ dev.off()
 
 jpeg("UK.jpeg",2500,2000,res=100)
 plot(UK.SP)
+dev.off()
+
+jpeg("UK_Country.jpeg",2500,2000,res=100)
+plot(UK.Country.SP)
+dev.off()
+
+jpeg("UK_County.jpeg",2500,2000,res=100)
+plot(UK.County.SP)
 dev.off()
