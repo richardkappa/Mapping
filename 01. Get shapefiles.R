@@ -25,7 +25,10 @@ Post.Area.SP <- spTransform(Post.Area.SP,CRS(OSGB))
 Post.Dist.SP <- spTransform(Post.Dist.SP,CRS(OSGB))
 Post.Sect.SP <- spTransform(Post.Sect.SP,CRS(OSGB))
 
-save(Post.Area.SP,Post.Dist.SP,Post.Sect.SP, file = "C:/Users/Richardkappa/Documents/Shapefiles/R Shapefiles/PostShapes.RData")
+#Simplify the area boundaries
+Post.Area.SP2 <- gSimplify(Post.Area.SP,500,topologyPreserve = TRUE)
+
+save(Post.Area.SP,Post.Dist.SP,Post.Sect.SP,Post.Area.SP2, file = "C:/Users/Richardkappa/Documents/Shapefiles/R Shapefiles/PostShapes.RData")
 
 # ONS shapefiles, from data.gov and geoportal.statistics.gov.uk
 LSOA.SP <- readOGR("C:/Users/Richardkappa/Documents/Shapefiles/LSOA Boundaries","LSOA_2011_EW_BGC_V2")
@@ -91,43 +94,9 @@ Post.Area.SP <- spChFIDs(Post.Area.SP,row.names(Post.Area.SP))
 # This doesn't quite work so don't save the output
 Disolved.UK.SP <- gUnaryUnion(Post.Area.SP,id=Post.Area.SP@data$UK)
 
-save(LSOA.SP,GovtOff.SP,LAD.SP, file = "C:/Users/Richardkappa/Documents/Shapefiles/R Shapefiles/ONSShapes.RData")
+#Simplify the LSOA boundaries for plotting
+LSOA.SP.2 <- gSimplify(LSOA.SP,500,topologyPreserve = TRUE)
+
+save(LSOA.SP,LSOA.SP.2,GovtOff.SP,LAD.SP, file = "C:/Users/Richardkappa/Documents/Shapefiles/R Shapefiles/ONSShapes.RData")
 save(LSOA.City,LSOA.LAD,LSOA.Population,LSOA.LAD,file="C:/Users/Richardkappa/Documents/Shapefiles/R Shapefiles/ONSLookups.RData")
 save(UK.SP,UK.County.SP,UK.Country.SP,file="C:/Users/Richardkappa/Documents/Shapefiles/R Shapefiles/UKCounty SHapefiles.RData")
-
-
-jpeg("LAD.jpeg",2500,2000,res=100)
-plot(LAD.SP)
-dev.off()
-
-jpeg("PostArea.jpeg",2500,2000,res=100)
-plot(Post.Area.SP)
-dev.off()
-
-jpeg("PostDist.jpeg",2500,2000,res=100)
-plot(Post.Dist.SP)
-dev.off()
-
-jpeg("PostSec.jpeg",2500,2000,res=100)
-plot(Post.Sect.SP)
-dev.off()
-
-jpeg("Govt.jpeg",2500,2000,res=100)
-plot(GovtOff.SP)
-dev.off()
-
-jpeg("LSOA.jpeg",2500,2000,res=100)
-plot(LSOA.SP)
-dev.off()
-
-jpeg("UK.jpeg",2500,2000,res=100)
-plot(UK.SP)
-dev.off()
-
-jpeg("UK_Country.jpeg",2500,2000,res=100)
-plot(UK.Country.SP)
-dev.off()
-
-jpeg("UK_County.jpeg",2500,2000,res=100)
-plot(UK.County.SP)
-dev.off()
